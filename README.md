@@ -1,1 +1,1 @@
-# SocialNetworkApi-Challenge18
+# Social Network Api - Challenge 18
