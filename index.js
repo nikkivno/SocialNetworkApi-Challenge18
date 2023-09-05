@@ -1,5 +1,3 @@
-// boilerplate code
-
 const express = require('express');
 const db = require('./config/connection');
 const routes = require('./routes');
@@ -16,7 +14,3 @@ db.once('open', () => {
     console.log(`API server running on port ${PORT}!`);
   });
 });
-
-
-// controllers next only user and thought 
-//  .populate(thoughts, friends)
