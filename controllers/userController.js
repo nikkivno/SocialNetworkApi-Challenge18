@@ -3,7 +3,7 @@ const { User, Thought } = require('../models/');
 module.exports = {
     async getUsers(req,res) {
         try {
-            const users = await User.find();
+            const users = await User.find().populate('thoughts').populate('friends');
             res.json(users);
         } catch (err) {
             res.status(500).json(err);
@@ -12,7 +12,7 @@ module.exports = {
 
 async getSingleUser(req,res) {
     try {
-        const user = await User.findOne({ _id: req.params.userId})
+        const user = await User.findOne({ _id: req.params.userId}).populate('thoughts').populate('friends')
         .select('-_v');
 
         if (!user) {
@@ -42,7 +42,7 @@ async deleteUser(req,res) {
         if (!user) {
             return res.status(404).json({message: 'No user with that ID'});
         }
-        await Thought.deleteMany({ _id: { $in: user.thought}});
+        await Thought.deleteMany({ _id: { $in: user.thoughts}});
         res.json({message: 'User has been deleted'});
     } catch (err) {
         res.status(500).json(err);
@@ -66,14 +66,14 @@ async updateUser(req,res) {
     }
 },
 
-async addThought(req,res) {
+async addFriend(req,res) {
     try {
-        console.log('You are adding a thought!');
-        console.log(req.body);
+        console.log('You are adding a friend!');
+        console.log(req.params.friendId);
 
         const user = await User.findOneAndUpdate(
             { _id: req.params.userId },
-            { $addToSet: { thoughts: req.body } },
+            { $addToSet: { friends: req.params.friendId } },
             { runValidators: true, new: true } 
         );
 
@@ -87,11 +87,11 @@ async addThought(req,res) {
     }
 },
 
-async removeThought(req,res) {
+async removeFriend(req,res) {
     try {
         const user = await User.findOneAndUpdate(
             { _id: req.params.userId },
-            { $pull: { thought: { thoughtId: req.params.thoughtId } } },
+            { $pull: { friends: req.params.friendId } },
             { runValidators: true, new: true }
         );
 
